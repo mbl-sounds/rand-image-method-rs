@@ -1,23 +1,86 @@
-use cpython::{PyResult, Python, py_module_initializer, py_fn};
+mod rim;
+use cpython::*;
 
 // add bindings to the generated python module
-// N.B: names: "rust2py" must be the name of the `.so` or `.pyd` file
-py_module_initializer!(librust2py, |py, m| {
-    m.add(py, "__doc__", "This module is implemented in Rust.")?;
-    m.add(py, "sum_as_string", py_fn!(py, sum_as_string_py(a: i64, b:i64)))?;
+py_module_initializer!(librimrs, |py, m| {
+    m.add(
+        py,
+        "rim",
+        py_fn!(
+            py,
+            solve_rim_py(
+                h_py: PyObject,
+                xs_py: PyObject,
+                xr_py: PyObject,
+                l_py: PyObject,
+                beta_py: PyObject,
+                n_py: PyObject,
+                rd: f64,
+                nt: usize,
+                seed: u64
+            )
+        ),
+    )?;
     Ok(())
 });
 
-// logic implemented as a normal rust function
-fn sum_as_string(a:i64, b:i64) -> String {
-    format!("{}", a + b).to_string()
-}
+fn solve_rim_py(
+    py: Python,
+    h_py: PyObject,
+    xs_py: PyObject,
+    xr_py: PyObject,
+    l_py: PyObject,
+    beta_py: PyObject,
+    n_py: PyObject,
+    rd: f64,
+    nt: usize,
+    seed: u64,
+) -> PyResult<usize> {
+    let h_buf = match buffer::PyBuffer::get(py, &h_py) {
+        Ok(buffer) => buffer,
+        Err(err) => return Err(err),
+    };
+    let mut h: Vec<Vec<f64>> = Vec::new();
+    for _ in 0..h_buf.shape()[1] {
+        h.push(vec![0.0; nt]);
+    }
 
-// rust-cpython aware function. All of our python interface could be
-// declared in a separate module.
-// Note that the py_fn!() macro automatically converts the arguments from
-// Python objects to Rust values; and the Rust return value back into a Python object.
-fn sum_as_string_py(_: Python, a:i64, b:i64) -> PyResult<String> {
-    let out = sum_as_string(a, b);
-    Ok(out)
+    let xs = match buffer::PyBuffer::get(py, &xs_py) {
+        Ok(buffer) => buffer.to_vec::<f64>(py).unwrap(),
+        Err(err) => return Err(err),
+    };
+
+    let xr = match buffer::PyBuffer::get(py, &xr_py) {
+        Ok(buffer) => buffer.to_vec::<f64>(py).unwrap(),
+        Err(err) => return Err(err),
+    };
+
+    let l = match buffer::PyBuffer::get(py, &l_py) {
+        Ok(buffer) => buffer.to_vec::<f64>(py).unwrap(),
+        Err(err) => return Err(err),
+    };
+
+    let beta = match buffer::PyBuffer::get(py, &beta_py) {
+        Ok(buffer) => buffer.to_vec::<f64>(py).unwrap(),
+        Err(err) => return Err(err),
+    };
+
+    let n = match buffer::PyBuffer::get(py, &n_py) {
+        Ok(buffer) => buffer.to_vec::<f64>(py).unwrap(),
+        Err(err) => return Err(err),
+    };
+
+    match rim::solve_rim(&mut h, xs, xr, l, beta, n, rd, nt, seed) {
+        Ok(res) => {
+            let nr_mics = h.len();
+            let slice = h_buf.as_mut_slice::<f64>(py).unwrap();
+            h.iter().enumerate().for_each(|(ch, h_)| {
+                h_.iter()
+                    .enumerate()
+                    .for_each(|(i, &val)| slice[i * nr_mics + ch].set(val))
+            });
+            Ok(res)
+        }
+        Err(_) => return Err(PyErr::new::<exc::BufferError, _>(py, "Execution failed!")),
+    }
 }

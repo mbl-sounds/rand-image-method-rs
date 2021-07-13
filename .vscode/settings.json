@@ -1,0 +1,8 @@
+{
+    "python.autoComplete.extraPaths": [
+        "./pytest"
+    ],
+    "python.analysis.extraPaths": [
+        "./pytest"
+    ]
+}

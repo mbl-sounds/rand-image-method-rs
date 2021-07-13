@@ -5,8 +5,13 @@ authors = ["matthias"]
 edition = "2018"
 
 [lib]
-name = "rust2py"
+name = "rimrs"
 crate-type = ["cdylib"]
+
+[dependencies]
+itertools = "0.10.1"
+rand = "0.8.4"
+rayon = "1.5"
 
 [dependencies.cpython]
 version = "0.6"
