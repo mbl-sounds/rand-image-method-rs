@@ -57,13 +57,12 @@ pub fn solve_rim(
 
                 let id = d.round() as usize;
                 if id < nt {
-                    // get amplitude
-                    let mut a = b_p
+                    // amplitude
+                    h_[id] += beta
                         .iter()
                         .enumerate()
-                        .fold(1.0, |acc, (i, &x)| acc * (beta[i].powf(x as f64)));
-                    a /= 4.0 * std::f64::consts::PI * d;
-                    h_[id] += a;
+                        .fold(1.0, |acc, (i, &b)| acc * (b.powf(b_p[i] as f64)))
+                        / (4.0 * std::f64::consts::PI * d);
                 }
             });
         });

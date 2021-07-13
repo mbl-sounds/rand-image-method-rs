@@ -74,10 +74,10 @@ fn solve_rim_py(
         Ok(res) => {
             let nr_mics = h.len();
             let slice = h_buf.as_mut_slice::<f64>(py).unwrap();
-            h.iter().enumerate().for_each(|(ch, h_)| {
+            h.iter().enumerate().for_each(|(mic, h_)| {
                 h_.iter()
                     .enumerate()
-                    .for_each(|(i, &val)| slice[i * nr_mics + ch].set(val))
+                    .for_each(|(i, &val)| slice[i * nr_mics + mic].set(val))
             });
             Ok(res)
         }
