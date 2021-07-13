@@ -71,6 +71,24 @@ pub fn solve_rim(
     Ok(0)
 }
 
+fn add_delay(h: &mut Vec<f64>, d: f64, a: f64, tw: f64, fc: f64, nt: usize) -> () {
+    let start_idx = (d - tw / 2.0).ceil().max(0.0) as usize;
+    let end_idx = (d + tw / 2.0).floor().min(nt as f64) as usize;
+    let a2 = a / 2.0;
+    h[start_idx..end_idx]
+        .iter_mut()
+        .enumerate()
+        .for_each(|(i, val)| {
+            *val += a2
+                * (1.0 + (2.0 * std::f64::consts::PI * (i as f64 - d) / tw).cos())
+                * sinc(fc * (i as f64 - d));
+        });
+}
+
+fn sinc(x: f64) -> f64 {
+    (x * std::f64::consts::PI).sin() / (x * std::f64::consts::PI)
+}
+
 // #[cfg(test)]
 // mod tests {
 //     use super::*;
