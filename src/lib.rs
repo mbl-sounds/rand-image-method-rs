@@ -66,7 +66,7 @@ fn solve_rim_py(
     };
 
     let n = match buffer::PyBuffer::get(py, &n_py) {
-        Ok(buffer) => buffer.to_vec::<f64>(py).unwrap(),
+        Ok(buffer) => buffer.to_vec::<i32>(py).unwrap(),
         Err(err) => return Err(err),
     };
 
