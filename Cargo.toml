@@ -15,4 +15,6 @@ rayon = "1.5"
 
 [dependencies.cpython]
 version = "0.6"
-features = ["extension-module"]
+[features]
+extension-module = ["cpython/extension-module"]
+default = ["extension-module"]

@@ -17,6 +17,8 @@ py_module_initializer!(librimrs, |py, m| {
                 n_py: PyObject,
                 rd: f64,
                 nt: usize,
+                tw: usize,
+                fc: f64,
                 seed: u64
             )
         ),
@@ -34,6 +36,8 @@ fn solve_rim_py(
     n_py: PyObject,
     rd: f64,
     nt: usize,
+    tw: usize,
+    fc: f64,
     seed: u64,
 ) -> PyResult<usize> {
     let h_buf = match buffer::PyBuffer::get(py, &h_py) {
@@ -70,7 +74,7 @@ fn solve_rim_py(
         Err(err) => return Err(err),
     };
 
-    match rim::solve_rim(&mut h, xs, xr, l, beta, n, rd, nt, seed) {
+    match rim::solve_rim(&mut h, xs, xr, l, beta, n, rd, nt, tw, fc, seed) {
         Ok(res) => {
             let nr_mics = h.len();
             let slice = h_buf.as_mut_slice::<f64>(py).unwrap();
