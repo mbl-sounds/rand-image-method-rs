@@ -38,8 +38,6 @@ pub fn solve_rim(
                     + (ord.2 as f64) * l[2]
                     + dis * (2.0 * rng.gen::<f64>() - 1.0);
 
-                // dbg!(&pos);
-
                 // dampening power
                 let b_p = [
                     (ord.0 - coord.0).abs(),
@@ -59,7 +57,6 @@ pub fn solve_rim(
                     })
                     .sqrt();
 
-                // dbg!(d);
                 let id = d.round() as usize;
                 if id < nt {
                     // amplitude
