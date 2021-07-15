@@ -96,7 +96,11 @@ fn add_delay(h: &mut Vec<f64>, d: f64, a: f64, tw: f64, fc: f64, nt: usize) -> (
 }
 
 fn sinc(x: f64) -> f64 {
-    (x * std::f64::consts::PI).sin() / (x * std::f64::consts::PI)
+    if x.eq(&0.0) {
+        1.0
+    } else {
+        (x * std::f64::consts::PI).sin() / (x * std::f64::consts::PI)
+    }
 }
 
 #[cfg(test)]
@@ -153,7 +157,7 @@ mod tests {
         let mut l = vec![6.0, 6.0, 6.0];
         mult_vec(&mut l, 2.0 * fsc);
         let beta = vec![0.9, 0.9, 0.9, 0.9, 0.9, 0.9];
-        let n = vec![20, 20, 20];
+        let n = vec![10, 10, 10];
         let rd = 0.0 * fsc;
         let tw: usize = 20;
         let fc = 0.9;
