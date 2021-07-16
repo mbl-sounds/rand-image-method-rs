@@ -1,3 +1,5 @@
 /target
-/pytest
+pytest/*
+!pytest/rim.py
+!pytest/test.py
 Cargo.lock
