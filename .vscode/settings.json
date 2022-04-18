@@ -4,5 +4,6 @@
     ],
     "python.analysis.extraPaths": [
         "./pytest"
-    ]
+    ],
+    "python.formatting.provider": "black"
 }
